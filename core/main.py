@@ -3,6 +3,7 @@ import os
 import subprocess
 import time
 import uuid
+from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -16,10 +17,6 @@ _START_PAGE: int = 1
 _TRACKING_FILE = os.path.join(ROOT_DIR, "downloads", "downloaded_samples.json")
 
 load_dotenv()
-
-SESSIONID = os.getenv("SESSIONID")
-CSRFTOKEN = os.getenv("CSRFTOKEN")
-SEARCH_URL = os.getenv("SEARCH_URL")
 
 
 def load_downloaded_samples_map():
@@ -55,8 +52,8 @@ def scrape_freesound():
     print("Scraping...")
     session = requests.Session()
     cookies = {
-        "sessionid": SESSIONID,
-        "csrftoken": CSRFTOKEN
+        "sessionid": os.getenv("SESSIONID"),
+        "csrftoken": os.getenv("CSRFTOKEN")
     }
     session.cookies.update(cookies)
 
@@ -64,6 +61,12 @@ def scrape_freesound():
     downloaded_filenames = get_downloaded_filenames(downloaded_samples_map)
     downloaded_author_sound_id_pairs = get_downloaded_author_sound_id_pairs(downloaded_samples_map)
     newly_downloaded = []
+
+    parsed_search_url = urlparse(os.getenv("SEARCH_URL"))
+    query = dict(parse_qsl(parsed_search_url.query))
+    query.pop("page", None)
+    new_query = urlencode(query, doseq=True)
+    clean_search_url = urlunparse(parsed_search_url._replace(query=new_query))
 
     failed_conversion_urls = []
 
@@ -76,8 +79,7 @@ def scrape_freesound():
         while not is_end:
             print(f"\nFetching page {page}")
             # Fetch page
-            SEARCH_URL =
-            page_url = f"{SEARCH_URL}&page={page}" if page > 1 else SEARCH_URL
+            page_url = f"{clean_search_url}&page={page}"
             try:
                 response = session.get(page_url)
             except Exception as e:
