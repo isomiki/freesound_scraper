@@ -1,4 +1,8 @@
-# Freesound scraper
+# Freesound.org scraper
+
+Downloads all sounds for a given search URL.
+
+Saves files in the original format and also converts to M4A.
 
 ## Installation
 
