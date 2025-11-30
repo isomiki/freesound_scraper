@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 
 from core.config.config import ROOT_DIR
 
-_BASE_URL = "https://freesound.org/search/?q=&f=license%253A%2522Creative%2520Commons%25200%2522%2520tag%253A%2522drum%2522&s=Rating+%28highest+first%29&si_tags=0&si_name=0&si_description=0&si_packname=0&si_sound_id=0&si_username=0&d0=0&d1=1&ig=0&r=0&g=0&dp=0&cm=0&mm=0"
 _DOWNLOAD_LIMIT: int | None = None
 _START_PAGE: int = 1
 
@@ -18,8 +17,9 @@ _TRACKING_FILE = os.path.join(ROOT_DIR, "downloads", "downloaded_samples.json")
 
 load_dotenv()
 
-sessionid = os.getenv("SESSIONID")
-csrftoken = os.getenv("CSRFTOKEN")
+SESSIONID = os.getenv("SESSIONID")
+CSRFTOKEN = os.getenv("CSRFTOKEN")
+SEARCH_URL = os.getenv("SEARCH_URL")
 
 
 def load_downloaded_samples_map():
@@ -55,8 +55,8 @@ def scrape_freesound():
     print("Scraping...")
     session = requests.Session()
     cookies = {
-        "sessionid": sessionid,
-        "csrftoken": csrftoken
+        "sessionid": SESSIONID,
+        "csrftoken": CSRFTOKEN
     }
     session.cookies.update(cookies)
 
@@ -76,7 +76,8 @@ def scrape_freesound():
         while not is_end:
             print(f"\nFetching page {page}")
             # Fetch page
-            page_url = f"{_BASE_URL}&page={page}" if page > 1 else _BASE_URL
+            SEARCH_URL =
+            page_url = f"{SEARCH_URL}&page={page}" if page > 1 else SEARCH_URL
             try:
                 response = session.get(page_url)
             except Exception as e:
